@@ -1,0 +1,55 @@
+/* Contenedor del formulario */
+.usuario-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* centra verticalmente */
+  align-items: center;       /* centra horizontalmente */
+  gap: 60px;                 /* espacio entre campos */
+  width: 100%;
+  max-width: 400px;          /* ancho máximo del formulario */
+  min-height: 100vh;         /* ocupa toda la pantalla */
+  padding: 16px;
+  margin: -100px auto 0;  
+}
+
+
+/* Cada IonItem centrado y con ancho completo del form */
+.usuario-item {
+  text-align: center !important;  /* fuerza el centrado */
+  width: 100%;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  
+}
+
+/* Etiquetas centradas */
+.label-centrado {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 6px;
+  margin-left: -2px; 
+  font-weight: 600;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+
+.boton {
+  width: 240px;
+  margin: -5px auto 0;
+  background-color: #3d89b2ff;
+  color: #0e0e0e;
+  border-radius: 20px;
+  font-weight: 700;
+  height: 48px;
+  font-size: 1.2rem;
+  text-align: center;
+  display: flex;           /* centra el texto vertical y horizontal */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+

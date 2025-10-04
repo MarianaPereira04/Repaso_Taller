@@ -1,0 +1,65 @@
+.usuario-detalle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.detalle-imagen {
+  width: 180px;   /* antes 120px */
+  height: 180px;  /* antes 120px */
+  margin-bottom: 40px;
+}
+
+.detalle-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* círculo */
+  border: 3px solid #288ca7; /* opcional: borde más grueso */
+}
+
+
+.detalle-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detalle-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.detalle-item span {
+  font-weight: 400;
+}
+
+/* Reutilizamos botón del create usuario */
+.boton-crear-usuario {
+  width: 240px;
+  margin: 20px auto 0;
+  background-color: #288ca7;
+  color: #0e0e0e;
+  border-radius: 20px;
+  font-weight: 700;
+  height: 48px;
+  font-size: 1.2rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
