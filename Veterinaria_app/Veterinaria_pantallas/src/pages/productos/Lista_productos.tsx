@@ -16,7 +16,7 @@ const ListaProductos: React.FC = () => {
   const history = useHistory();
 
   const productos: Producto[] = [
-    { id: 1, nombre: "Alimento para perro", precio: "$50.000", imagen: "/assets/alimento.png" },
+    { id: 1, nombre: "Alimento para perro", precio: "$53.000", imagen: "/assets/alimento.png" },
     { id: 2, nombre: "Collar de gato", precio: "$25.000", imagen: "/assets/collar.png" },
   ];
 
