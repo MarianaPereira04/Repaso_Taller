@@ -259,3 +259,5 @@ El sistema busca optimizar la administración diaria de la veterinaria, garantiz
 ---
 
 LINK TRELLO: https://trello.com/invite/b/68eda33fc59ae2df84b77533/ATTIa31bf656126f0cd53046bab93569c59a290EBD09/appveterinaria 
+
+LINK VIDEO SUSTENTACIÓN: https://youtu.be/Bo64tPm6G-I?si=Md0Tl5rQ78KyNiOj 

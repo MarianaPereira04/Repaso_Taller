@@ -56,8 +56,7 @@ const ListaUsuario: React.FC = () => {
             >
                 Ver productos
             </div>
-
-
+            
         </BaseLayout>
     );
 };
