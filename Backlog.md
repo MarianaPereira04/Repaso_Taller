@@ -14,30 +14,24 @@ El sistema busca optimizar la administración diaria de la veterinaria, garantiz
 
 | ID | Como (rol) | Quiero (objetivo) | Para (beneficio) | Prioridad |
 |----|-------------|------------------|------------------|------------|
-
 | **HU01** | Administrador | Crear un nuevo usuario ingresando nombre completo, correo electrónico, teléfono, rol y estado | Registrar nuevos miembros del sistema con sus datos completos | Alta |
 | **HU02** | Administrador | Editar la información de un usuario (nombre completo, correo electrónico, teléfono, rol y estado) | Mantener los datos de los usuarios actualizados | Alta |
 | **HU03** | Administrador | Listar todos los usuarios mostrando nombre completo, correo electrónico y rol | Visualizar rápidamente la información general de los usuarios registrados | Alta |
-| **HU04** | Administrador | Ver el detalle completo de un usuario con toda su información personal (nombre completo, correo electrónico, teléfono, rol y estado) más una imagen estática (representativa)| Consultar información específica de un usuario del sistema | Media |
-
+| **HU04** | Administrador | Ver el detalle completo de un usuario con toda su información personal (nombre completo, correo electrónico, teléfono, rol y estado) más una imagen estática (representativa) | Consultar información específica de un usuario del sistema | Media |
 | **HU05** | Administrador | Registrar una nueva mascota ingresando nombre, especie, raza, edad, sexo, propietario y estado de salud | Llevar un registro completo de las mascotas atendidas | Alta |
 | **HU06** | Administrador | Editar los datos de una mascota (nombre, especie, raza, edad, sexo, propietario y estado de salud) | Actualizar información clínica o del propietario de la mascota | Alta |
-| **HU07** | Administrador | Listar todas las mascotas mostrando nombre, especie y propietario| Visualizar de forma general todas las mascotas registradas | Alta |
+| **HU07** | Administrador | Listar todas las mascotas mostrando nombre, especie y propietario | Visualizar de forma general todas las mascotas registradas | Alta |
 | **HU08** | Administrador | Ver el detalle completo de una mascota con sus datos clínicos e información del propietario (nombre, especie, raza, edad, sexo, propietario y estado de salud) más una imagen estática (representativa) | Consultar información médica o de contacto de cada mascota | Media |
-
 | **HU09** | Administrador | Crear un nuevo tipo de mascota ingresando nombre del tipo, descripción y URL del ícono | Clasificar correctamente las mascotas por su especie | Media |
 | **HU10** | Administrador | Editar un tipo de mascota modificando nombre del tipo, descripción y URL del ícono | Mantener actualizada la información visual y descriptiva de las especies | Media |
 | **HU11** | Administrador | Listar todos los tipos de mascotas mostrando nombre, descripción e ícono | Visualizar fácilmente las especies registradas en el sistema | Media |
-
-| **HU12** | Administrador | Crear un nuevo producto ingresando nombre, categoría, precio, stock e imagen (ruta)| Registrar nuevos artículos disponibles para la venta o uso interno | Alta |
+| **HU12** | Administrador | Crear un nuevo producto ingresando nombre, categoría, precio, stock e imagen (ruta) | Registrar nuevos artículos disponibles para la venta o uso interno | Alta |
 | **HU13** | Administrador | Editar un producto modificando su nombre, categoría, precio, stock e imagen (ruta) | Mantener actualizada la información del inventario | Alta |
-| **HU14** | Administrador | Listar todos los productos mostrando imagen, nombre, precio | Visualizar el inventario general de productos | Alta |
+| **HU14** | Administrador | Listar todos los productos mostrando imagen, nombre y precio | Visualizar el inventario general de productos | Alta |
 | **HU15** | Administrador | Ver el detalle de un producto con su imagen, nombre, descripción, precio, categoría y stock | Consultar información detallada de cada producto | Media |
-
 | **HU16** | Administrador | Crear una nueva categoría de producto ingresando nombre, descripción e URL del ícono | Clasificar los productos según su tipo (alimentos, medicamentos, accesorios, etc.) | Media |
 | **HU17** | Administrador | Editar una categoría modificando su nombre, descripción e URL del ícono | Mantener actualizadas las categorías de productos | Media |
 | **HU18** | Administrador | Listar todas las categorías mostrando nombre, descripción e ícono | Facilitar la navegación y organización de productos en el sistema | Media |
-
 
 ---
 
