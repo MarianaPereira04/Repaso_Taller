@@ -8,6 +8,7 @@ export interface Producto {
   id?: number;
   nombre: string;
   descripcion: string;
+  precio: string;
   categoria: string;
   stock: string;
   imagen: string;
@@ -21,6 +22,7 @@ const DetalleProducto: React.FC = () => {
     nombre: "Producto ejemplo",
     descripcion: "Descripción del producto",
     categoria: "Alimento",
+    precio: "$$$",
     stock: "20",
     imagen: "/assets/producto.png",
   };
@@ -38,6 +40,9 @@ const DetalleProducto: React.FC = () => {
           </div>
           <div className="detalle-item">
             <strong>Descripción:</strong> <span>{producto.descripcion}</span>
+          </div>
+          <div className="detalle-item">
+            <strong>Precio:</strong> <span>{producto.precio}</span>
           </div>
           <div className="detalle-item">
             <strong>Categoría:</strong> <span>{producto.categoria}</span>

@@ -50,7 +50,7 @@ const Crear_tipo: React.FC = () => {
 
         <IonItem className="usuario-item">
           <IonLabel position="stacked" className="label-centrado">
-            URL del icono
+            URL del ícono
           </IonLabel>
           <IonInput
             value={form.icono}

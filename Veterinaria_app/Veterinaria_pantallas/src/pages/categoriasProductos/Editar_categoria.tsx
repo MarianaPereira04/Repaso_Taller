@@ -40,7 +40,7 @@ const Editar_categoria: React.FC = () => {
         </IonItem>
 
         <IonItem className="usuario-item">
-          <IonLabel position="stacked" className="label-centrado">URL del icono</IonLabel>
+          <IonLabel position="stacked" className="label-centrado">URL del ícono</IonLabel>
           <IonInput value={form.icono} onIonChange={(e) => handleChange("icono", e.detail.value!)} />
         </IonItem>
 

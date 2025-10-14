@@ -8,6 +8,7 @@ import { IonButton } from "@ionic/react";
 interface TipoMascota {
   id: number;
   nombre: string;
+  descripcion: string;
   icono: string; // ruta de la imagen o icono
 }
 
@@ -15,8 +16,8 @@ const Listar_tipo: React.FC = () => {
   const history = useHistory();
 
   const tipos: TipoMascota[] = [
-    { id: 1, nombre: "Perro", icono: "/assets/tipo_mascota.png" },
-    { id: 2, nombre: "Gato", icono: "/assets/tipo_mascota.png" },
+    { id: 1, nombre: "Perro", descripcion: "Animales domésticos leales y activos", icono: "/assets/tipo_mascota.png" },
+    { id: 2, nombre: "Gato", descripcion: "Felinos domésticos independientes y curiosos", icono: "/assets/tipo_mascota.png" },
   ];
 
   return (
@@ -26,6 +27,7 @@ const Listar_tipo: React.FC = () => {
           <div key={t.id} className="usuario-card">
             <img src={t.icono} alt={t.nombre} style={{ width: "80px", height: "80px", marginBottom: "10px" }} />
             <h3>{t.nombre}</h3>
+            <h3>{t.descripcion}</h3>
             <div className="card-actions">
               <IonButton size="small" onClick={() => history.push("/types/edit")}>Editar</IonButton>
             </div>
