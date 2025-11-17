@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @default(uuid())
+  nombre    String
+  correo    String   @unique
+  telefono  String
+  rol       String
+  estado    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TipoMascota {
+  id          String    @id @default(uuid())
+  nombre      String
+  descripcion String
+  icono       String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Un tipo puede tener muchas mascotas
+  mascotas    Mascota[]
+}
+
+model Mascota {
+  id           String     @id @default(uuid())
+  nombre       String
+  raza         String
+  edad         Int
+  sexo         String
+  propietario  String
+  estadoSalud  String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relación OBLIGATORIA con TipoMascota (especie)
+  tipoMascotaId String
+  tipoMascota   TipoMascota @relation(fields: [tipoMascotaId], references: [id])
+}
+
+model CategoriaProducto {
+  id          String      @id @default(uuid())
+  nombre      String
+  descripcion String
+  icono       String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Una categoría puede tener muchos productos
+  productos   Producto[]
+}
+
+model Producto {
+  id          String            @id @default(uuid())
+  nombre      String
+  precio      Decimal           @db.Decimal(10, 2)
+  stock       Int
+  imagen      String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relación OBLIGATORIA con CategoriaProducto
+  categoriaId String
+  categoria   CategoriaProducto @relation(fields: [categoriaId], references: [id])
+}
