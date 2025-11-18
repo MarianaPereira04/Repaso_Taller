@@ -8,8 +8,8 @@ export class TipoMascotaController {
   constructor(private readonly tipoMascotaService: TipoMascotaService) {}
 
   @Post()
-  create(@Body() createTipoMascotaDto: CreateTipoMascotaDto) {
-    return this.tipoMascotaService.create(createTipoMascotaDto);
+  create(@Body() dto: CreateTipoMascotaDto) {
+    return this.tipoMascotaService.create(dto);
   }
 
   @Get()
@@ -19,16 +19,16 @@ export class TipoMascotaController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.tipoMascotaService.findOne(+id);
+    return this.tipoMascotaService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTipoMascotaDto: UpdateTipoMascotaDto) {
-    return this.tipoMascotaService.update(+id, updateTipoMascotaDto);
+  update(@Param('id') id: string, @Body() dto: UpdateTipoMascotaDto) {
+    return this.tipoMascotaService.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tipoMascotaService.remove(+id);
+    return this.tipoMascotaService.remove(id);
   }
 }

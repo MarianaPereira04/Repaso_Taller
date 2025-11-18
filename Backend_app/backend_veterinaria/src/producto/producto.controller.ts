@@ -8,8 +8,8 @@ export class ProductoController {
   constructor(private readonly productoService: ProductoService) {}
 
   @Post()
-  create(@Body() createProductoDto: CreateProductoDto) {
-    return this.productoService.create(createProductoDto);
+  create(@Body() dto: CreateProductoDto) {
+    return this.productoService.create(dto);
   }
 
   @Get()
@@ -19,16 +19,16 @@ export class ProductoController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productoService.findOne(+id);
+    return this.productoService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductoDto: UpdateProductoDto) {
-    return this.productoService.update(+id, updateProductoDto);
+  update(@Param('id') id: string, @Body() dto: UpdateProductoDto) {
+    return this.productoService.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productoService.remove(+id);
+    return this.productoService.remove(id);
   }
 }
