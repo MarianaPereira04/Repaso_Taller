@@ -4,13 +4,14 @@ import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
 import {
   tipoMascotaService,
-  TipoMascota,
   UpdateTipoMascotaDto,
 } from "../../services/tipoMascotaService";
 
+type TipoErrors = Partial<Record<keyof UpdateTipoMascotaDto, string>>;
+
 const Editar_tipo: React.FC = () => {
   const history = useHistory();
-  const { id } = useParams<{ id: string }>(); // 👈 recibir ID desde la URL
+  const { id } = useParams<{ id: string }>();
 
   const [form, setForm] = useState<UpdateTipoMascotaDto>({
     nombre: "",
@@ -18,17 +19,18 @@ const Editar_tipo: React.FC = () => {
     icono: "",
   });
 
+  const [errors, setErrors] = useState<TipoErrors>({});
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Cargar datos originales del tipo
+  // Cargar datos del backend
   useEffect(() => {
     const loadData = async () => {
       try {
         const data = await tipoMascotaService.getById(id);
         setForm({
-          nombre: data.nombre,
-          descripcion: data.descripcion,
-          icono: data.icono,
+          nombre: data.nombre ?? "",
+          descripcion: data.descripcion ?? "",
+          icono: data.icono ?? "",
         });
       } catch (error) {
         console.error("Error cargando tipo", error);
@@ -43,9 +45,30 @@ const Editar_tipo: React.FC = () => {
 
   const handleChange = (field: keyof UpdateTipoMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validate = (): boolean => {
+    const newErrors: TipoErrors = {};
+
+    if (!form.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio";
+
+    if (!form.descripcion?.trim())
+      newErrors.descripcion = "La descripción es obligatoria";
+
+    if (!form.icono?.trim()) {
+      newErrors.icono = "La URL del icono es obligatoria";
+    } else if (!/^https?:\/\/.+/i.test(form.icono)) {
+      newErrors.icono = "Ingresa una URL válida (http o https)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
+    if (!validate()) return;
+
     try {
       await tipoMascotaService.update(id, form);
       history.push("/types");
@@ -75,6 +98,7 @@ const Editar_tipo: React.FC = () => {
             value={form.nombre}
             onChange={(e) => handleChange("nombre", e.target.value)}
           />
+          {errors.nombre && <span className="campo-error">{errors.nombre}</span>}
         </div>
 
         {/* Descripción */}
@@ -86,6 +110,9 @@ const Editar_tipo: React.FC = () => {
             value={form.descripcion}
             onChange={(e) => handleChange("descripcion", e.target.value)}
           />
+          {errors.descripcion && (
+            <span className="campo-error">{errors.descripcion}</span>
+          )}
         </div>
 
         {/* Icono */}
@@ -97,6 +124,7 @@ const Editar_tipo: React.FC = () => {
             value={form.icono}
             onChange={(e) => handleChange("icono", e.target.value)}
           />
+          {errors.icono && <span className="campo-error">{errors.icono}</span>}
         </div>
 
         <button type="button" className="boton" onClick={handleSubmit}>

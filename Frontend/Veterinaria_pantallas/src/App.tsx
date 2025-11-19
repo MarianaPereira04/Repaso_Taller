@@ -37,11 +37,13 @@ const App: React.FC = () => {
           <Route path="/users/:id/edit" exact component={EditarUsuario} />
 
 
+        
           {/* Mascotas */}
           <Route path="/pets" exact component={ListaMascotas} />
           <Route path="/pets/create" exact component={RegistrarMascota} />
+          <Route path="/pets/:id/edit" exact component={EditarMascota} />  {/* 👈 primero */}
           <Route path="/pets/:id" exact component={DetalleMascota} />
-          <Route path="/pets/:id/edit" exact component={EditarMascota} />
+
 
 
           {/* Productos */}

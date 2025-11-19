@@ -5,13 +5,15 @@ import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
 import {
   categoriaProductoService,
-  CategoriaProducto,
   UpdateCategoriaProductoDto,
+  CategoriaProducto,
 } from "../../services/categoriaProductoService";
 
 interface RouteParams {
   id: string;
 }
+
+type CategoriaErrors = Partial<Record<keyof UpdateCategoriaProductoDto, string>>;
 
 const Editar_categoria: React.FC = () => {
   const history = useHistory();
@@ -22,9 +24,11 @@ const Editar_categoria: React.FC = () => {
     descripcion: "",
     icono: "",
   });
+
+  const [errors, setErrors] = useState<CategoriaErrors>({});
   const [loading, setLoading] = useState(true);
 
-  // Cargar datos originales
+  // Cargar datos originales del backend
   useEffect(() => {
     const load = async () => {
       try {
@@ -47,12 +51,32 @@ const Editar_categoria: React.FC = () => {
 
   const handleChange = (field: keyof UpdateCategoriaProductoDto, value: string) => {
     setForm({ ...form, [field]: value });
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  // VALIDACIONES
+  const validate = (): boolean => {
+    const newErrors: CategoriaErrors = {};
+
+    if (!form.nombre?.trim()) newErrors.nombre = "El nombre es obligatorio";
+    if (!form.descripcion?.trim())
+      newErrors.descripcion = "La descripción es obligatoria";
+
+    if (!form.icono?.trim()) {
+      newErrors.icono = "La URL del icono es obligatoria";
+    } else if (!/^https?:\/\/.+/i.test(form.icono)) {
+      newErrors.icono = "Ingresa una URL válida (http o https)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
+    if (!validate()) return;
+
     try {
       await categoriaProductoService.update(id, form);
-      // opcional: alert("Categoría actualizada");
       history.push("/categories");
     } catch (error) {
       console.error("Error actualizando categoría", error);
@@ -80,6 +104,7 @@ const Editar_categoria: React.FC = () => {
             value={form.nombre ?? ""}
             onChange={(e) => handleChange("nombre", e.target.value)}
           />
+          {errors.nombre && <span className="campo-error">{errors.nombre}</span>}
         </div>
 
         {/* Descripción */}
@@ -91,6 +116,9 @@ const Editar_categoria: React.FC = () => {
             value={form.descripcion ?? ""}
             onChange={(e) => handleChange("descripcion", e.target.value)}
           />
+          {errors.descripcion && (
+            <span className="campo-error">{errors.descripcion}</span>
+          )}
         </div>
 
         {/* Icono */}
@@ -102,6 +130,7 @@ const Editar_categoria: React.FC = () => {
             value={form.icono ?? ""}
             onChange={(e) => handleChange("icono", e.target.value)}
           />
+          {errors.icono && <span className="campo-error">{errors.icono}</span>}
         </div>
 
         <button type="button" className="boton" onClick={handleSubmit}>

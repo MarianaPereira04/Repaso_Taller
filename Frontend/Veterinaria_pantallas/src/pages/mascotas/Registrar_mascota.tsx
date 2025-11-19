@@ -11,6 +11,8 @@ import {
   TipoMascota,
 } from "../../services/tipoMascotaService";
 
+type MascotaErrors = Partial<Record<keyof CreateMascotaDto, string>>;
+
 const RegistrarMascota: React.FC = () => {
   const history = useHistory();
 
@@ -24,6 +26,7 @@ const RegistrarMascota: React.FC = () => {
     tipoMascotaId: "",
   });
 
+  const [errors, setErrors] = useState<MascotaErrors>({});
   const [tipos, setTipos] = useState<TipoMascota[]>([]);
   const [loadingTipos, setLoadingTipos] = useState(true);
 
@@ -46,16 +49,69 @@ const RegistrarMascota: React.FC = () => {
 
   const handleChange = (field: keyof CreateMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validate = (): boolean => {
+    const newErrors: MascotaErrors = {};
+
+    // Nombre obligatorio
+    if (!form.nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    }
+
+    // Tipo de mascota obligatorio
+    if (!form.tipoMascotaId) {
+      newErrors.tipoMascotaId = "Debes seleccionar un tipo de mascota";
+    }
+
+    // Raza obligatoria
+    if (!form.raza.trim()) {
+      newErrors.raza = "La raza es obligatoria";
+    }
+
+    // Edad obligatoria, numérica, >= 0
+    const edadStr = String(form.edad ?? "").trim();
+    const edadNum = Number(edadStr);
+
+    if (!edadStr) {
+      newErrors.edad = "La edad es obligatoria";
+    } else if (isNaN(edadNum)) {
+      newErrors.edad = "La edad debe ser un número";
+    } else if (edadNum < 0) {
+      newErrors.edad = "La edad no puede ser negativa";
+    }
+
+    // Sexo obligatorio
+    if (!form.sexo.trim()) {
+      newErrors.sexo = "El sexo es obligatorio";
+    }
+
+    // Propietario obligatorio
+    if (!form.propietario.trim()) {
+      newErrors.propietario = "El nombre del propietario es obligatorio";
+    }
+
+    // Estado de salud obligatorio
+    if (!form.estadoSalud.trim()) {
+      newErrors.estadoSalud = "El estado de salud es obligatorio";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!form.tipoMascotaId) {
-      alert("Selecciona un tipo de mascota");
-      return;
-    }
+    if (!validate()) return;
 
     try {
-      await mascotaService.create(form);
+      // Si el backend espera edad numérica, la puedes transformar aquí:
+      const payload: CreateMascotaDto = {
+        ...form,
+        edad: String(form.edad), // o Number(form.edad) según tu DTO
+      };
+
+      await mascotaService.create(payload);
       // opcional: alert("Mascota registrada correctamente");
       history.push("/pets");
     } catch (error) {
@@ -76,6 +132,9 @@ const RegistrarMascota: React.FC = () => {
             value={form.nombre}
             onChange={(e) => handleChange("nombre", e.target.value)}
           />
+          {errors.nombre && (
+            <span className="campo-error">{errors.nombre}</span>
+          )}
         </div>
 
         {/* Tipo de mascota (desplegable) */}
@@ -84,18 +143,23 @@ const RegistrarMascota: React.FC = () => {
           {loadingTipos ? (
             <p>Cargando tipos...</p>
           ) : (
-            <select
-              className="campo-input"
-              value={form.tipoMascotaId}
-              onChange={(e) => handleChange("tipoMascotaId", e.target.value)}
-            >
-              <option value="">Selecciona un tipo</option>
-              {tipos.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.nombre}
-                </option>
-              ))}
-            </select>
+            <>
+              <select
+                className="campo-input"
+                value={form.tipoMascotaId}
+                onChange={(e) => handleChange("tipoMascotaId", e.target.value)}
+              >
+                <option value="">Selecciona un tipo</option>
+                {tipos.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nombre}
+                  </option>
+                ))}
+              </select>
+              {errors.tipoMascotaId && (
+                <span className="campo-error">{errors.tipoMascotaId}</span>
+              )}
+            </>
           )}
         </div>
 
@@ -108,6 +172,7 @@ const RegistrarMascota: React.FC = () => {
             value={form.raza}
             onChange={(e) => handleChange("raza", e.target.value)}
           />
+          {errors.raza && <span className="campo-error">{errors.raza}</span>}
         </div>
 
         {/* Edad */}
@@ -116,9 +181,10 @@ const RegistrarMascota: React.FC = () => {
           <input
             className="campo-input"
             type="number"
-            value={form.edad}
+            value={String(form.edad ?? "")}
             onChange={(e) => handleChange("edad", e.target.value)}
           />
+          {errors.edad && <span className="campo-error">{errors.edad}</span>}
         </div>
 
         {/* Sexo */}
@@ -130,6 +196,7 @@ const RegistrarMascota: React.FC = () => {
             value={form.sexo}
             onChange={(e) => handleChange("sexo", e.target.value)}
           />
+          {errors.sexo && <span className="campo-error">{errors.sexo}</span>}
         </div>
 
         {/* Propietario */}
@@ -141,6 +208,9 @@ const RegistrarMascota: React.FC = () => {
             value={form.propietario}
             onChange={(e) => handleChange("propietario", e.target.value)}
           />
+          {errors.propietario && (
+            <span className="campo-error">{errors.propietario}</span>
+          )}
         </div>
 
         {/* Estado de salud */}
@@ -152,6 +222,9 @@ const RegistrarMascota: React.FC = () => {
             value={form.estadoSalud}
             onChange={(e) => handleChange("estadoSalud", e.target.value)}
           />
+          {errors.estadoSalud && (
+            <span className="campo-error">{errors.estadoSalud}</span>
+          )}
         </div>
 
         <button type="button" className="boton" onClick={handleSubmit}>

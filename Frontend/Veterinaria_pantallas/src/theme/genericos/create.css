@@ -78,3 +78,10 @@
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
 }
+
+.campo-error {
+  color: #e53935;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}

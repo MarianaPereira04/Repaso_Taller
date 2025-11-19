@@ -11,11 +11,14 @@ interface RouteParams {
   id: string;
 }
 
+type UsuarioUpdateErrors = Partial<Record<keyof UpdateUsuarioDto, string>>;
+
 const EditarUsuario: React.FC = () => {
   const history = useHistory();
   const { id } = useParams<RouteParams>();
 
   const [form, setForm] = useState<UpdateUsuarioDto | null>(null);
+  const [errors, setErrors] = useState<UsuarioUpdateErrors>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,10 +46,50 @@ const EditarUsuario: React.FC = () => {
   const handleChange = (field: keyof UpdateUsuarioDto, value: string) => {
     if (!form) return;
     setForm({ ...form, [field]: value });
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validate = (): boolean => {
+    if (!form) return false;
+
+    const newErrors: UsuarioUpdateErrors = {};
+
+    if (!form.nombre?.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    }
+
+    if (!form.correo?.trim()) {
+      newErrors.correo = "El correo es obligatorio";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) {
+      newErrors.correo = "El correo no tiene un formato válido";
+    }
+
+    if (!form.telefono?.trim()) {
+      newErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d+$/.test(form.telefono)) {
+      newErrors.telefono = "El teléfono solo debe contener números";
+    } else if (form.telefono.length < 7) {
+      newErrors.telefono = "El teléfono debe tener al menos 7 dígitos";
+    }
+
+    if (!form.rol?.trim()) {
+      newErrors.rol = "El rol es obligatorio";
+    }
+
+    if (!form.estado?.trim()) {
+      newErrors.estado = "El estado es obligatorio";
+    } else if (!["ACTIVO", "INACTIVO"].includes(form.estado)) {
+      newErrors.estado = "El estado debe ser ACTIVO o INACTIVO";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
     if (!form) return;
+
+    if (!validate()) return; // ❌ no manda si hay errores
 
     try {
       await usuarioService.update(id, form);
@@ -78,6 +121,9 @@ const EditarUsuario: React.FC = () => {
             value={form.nombre ?? ""}
             onChange={(e) => handleChange("nombre", e.target.value)}
           />
+          {errors.nombre && (
+            <span className="campo-error">{errors.nombre}</span>
+          )}
         </div>
 
         {/* Correo */}
@@ -89,6 +135,9 @@ const EditarUsuario: React.FC = () => {
             value={form.correo ?? ""}
             onChange={(e) => handleChange("correo", e.target.value)}
           />
+          {errors.correo && (
+            <span className="campo-error">{errors.correo}</span>
+          )}
         </div>
 
         {/* Teléfono */}
@@ -100,6 +149,9 @@ const EditarUsuario: React.FC = () => {
             value={form.telefono ?? ""}
             onChange={(e) => handleChange("telefono", e.target.value)}
           />
+          {errors.telefono && (
+            <span className="campo-error">{errors.telefono}</span>
+          )}
         </div>
 
         {/* Rol */}
@@ -111,17 +163,24 @@ const EditarUsuario: React.FC = () => {
             value={form.rol ?? ""}
             onChange={(e) => handleChange("rol", e.target.value)}
           />
+          {errors.rol && <span className="campo-error">{errors.rol}</span>}
         </div>
 
-        {/* Estado */}
+        {/* Estado — ahora también SELECT */}
         <div className="campo">
           <label className="campo-label">Estado</label>
-          <input
+          <select
             className="campo-input"
-            type="text"
             value={form.estado ?? ""}
             onChange={(e) => handleChange("estado", e.target.value)}
-          />
+          >
+            <option value="">Seleccione...</option>
+            <option value="ACTIVO">Activo</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
+          {errors.estado && (
+            <span className="campo-error">{errors.estado}</span>
+          )}
         </div>
 
         <button type="button" className="boton" onClick={handleSubmit}>

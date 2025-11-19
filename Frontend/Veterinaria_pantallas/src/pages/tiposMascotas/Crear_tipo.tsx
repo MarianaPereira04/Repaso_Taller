@@ -7,6 +7,8 @@ import {
   CreateTipoMascotaDto,
 } from "../../services/tipoMascotaService";
 
+type TipoErrors = Partial<Record<keyof CreateTipoMascotaDto, string>>;
+
 const Crear_tipo: React.FC = () => {
   const history = useHistory();
 
@@ -16,14 +18,36 @@ const Crear_tipo: React.FC = () => {
     icono: "",
   });
 
+  const [errors, setErrors] = useState<TipoErrors>({});
+
   const handleChange = (field: keyof CreateTipoMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validate = (): boolean => {
+    const newErrors: TipoErrors = {};
+
+    if (!form.nombre.trim()) newErrors.nombre = "El nombre es obligatorio";
+
+    if (!form.descripcion.trim())
+      newErrors.descripcion = "La descripción es obligatoria";
+
+    if (!form.icono.trim()) {
+      newErrors.icono = "La URL del icono es obligatoria";
+    } else if (!/^https?:\/\/.+/i.test(form.icono)) {
+      newErrors.icono = "Debes ingresar una URL válida (http o https)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
+    if (!validate()) return;
+
     try {
       await tipoMascotaService.create(form);
-      // alert("Tipo de mascota creado");
       history.push("/types");
     } catch (error) {
       console.error("Error creando tipo de mascota", error);
@@ -43,6 +67,7 @@ const Crear_tipo: React.FC = () => {
             value={form.nombre}
             onChange={(e) => handleChange("nombre", e.target.value)}
           />
+          {errors.nombre && <span className="campo-error">{errors.nombre}</span>}
         </div>
 
         {/* Descripción */}
@@ -54,6 +79,9 @@ const Crear_tipo: React.FC = () => {
             value={form.descripcion}
             onChange={(e) => handleChange("descripcion", e.target.value)}
           />
+          {errors.descripcion && (
+            <span className="campo-error">{errors.descripcion}</span>
+          )}
         </div>
 
         {/* Icono */}
@@ -65,6 +93,7 @@ const Crear_tipo: React.FC = () => {
             value={form.icono}
             onChange={(e) => handleChange("icono", e.target.value)}
           />
+          {errors.icono && <span className="campo-error">{errors.icono}</span>}
         </div>
 
         <button type="button" className="boton" onClick={handleSubmit}>

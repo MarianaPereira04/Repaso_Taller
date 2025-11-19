@@ -30,6 +30,27 @@ const DetalleMascota: React.FC = () => {
     load();
   }, [id]);
 
+  /** 🔹 Validadores suaves */
+  const safeText = (value?: string | number) => {
+    if (value === null || value === undefined || value === "") return "No registrado";
+    return String(value);
+  };
+
+  const safeTipo = () => {
+    if (!mascota) return "No registrado";
+
+    return mascota.tipoMascota?.nombre 
+      ?? mascota.tipoMascotaId 
+      ?? "No registrado";
+  };
+
+  const safeEdad = () => {
+    if (!mascota) return "Edad no disponible";
+    if (mascota.edad === undefined || mascota.edad === null) return "Edad no disponible";
+    if (Number.isNaN(Number(mascota.edad))) return "Edad no válida";
+    return mascota.edad;
+  };
+
   if (loading) {
     return (
       <BaseLayout title="Detalle Mascota">
@@ -60,30 +81,42 @@ const DetalleMascota: React.FC = () => {
           <img src="/assets/perfil.webp" alt="Mascota" />
         </div>
 
-        {/* Información */}
+        {/* Información con validación */}
         <div className="detalle-info" style={{ gap: "5px" }}>
+          
           <div className="detalle-item">
-            <strong>Nombre:</strong> <span>{mascota.nombre}</span>
+            <strong>Nombre:</strong> 
+            <span>{safeText(mascota.nombre)}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Especie / Tipo:</strong>{" "}
-            <span>{mascota.tipoMascota?.nombre ?? mascota.tipoMascotaId}</span>
+            <strong>Especie / Tipo:</strong> 
+            <span>{safeTipo()}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Raza:</strong> <span>{mascota.raza}</span>
+            <strong>Raza:</strong> 
+            <span>{safeText(mascota.raza)}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Edad:</strong> <span>{mascota.edad}</span>
+            <strong>Edad:</strong> 
+            <span>{safeEdad()}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Sexo:</strong> <span>{mascota.sexo}</span>
+            <strong>Sexo:</strong> 
+            <span>{safeText(mascota.sexo)}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Propietario:</strong> <span>{mascota.propietario}</span>
+            <strong>Propietario:</strong> 
+            <span>{safeText(mascota.propietario)}</span>
           </div>
+
           <div className="detalle-item">
-            <strong>Estado de salud:</strong>{" "}
-            <span>{mascota.estadoSalud}</span>
+            <strong>Estado de salud:</strong> 
+            <span>{safeText(mascota.estadoSalud)}</span>
           </div>
         </div>
 
