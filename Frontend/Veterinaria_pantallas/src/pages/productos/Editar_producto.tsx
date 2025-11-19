@@ -1,13 +1,25 @@
 // src/pages/productos/EditarProducto.tsx
-import React, { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
+import {
+  productoService,
+  Producto,
+  UpdateProductoDto,
+} from "../../services/productoService";
+import {
+  categoriaProductoService,
+  CategoriaProducto,
+} from "../../services/categoriaProductoService";
 
-export interface Producto {
-  id?: number;
+interface RouteParams {
+  id: string;
+}
+
+interface ProductoForm {
   nombre: string;
-  categoria: string;
+  categoriaId: string;
   precio: string;
   stock: string;
   imagen: string;
@@ -15,35 +27,92 @@ export interface Producto {
 
 const EditarProducto: React.FC = () => {
   const history = useHistory();
-  const location = useLocation<{ producto: Producto }>();
+  const { id } = useParams<RouteParams>();
 
-  const [form, setForm] = useState<Producto>({
+  const [form, setForm] = useState<ProductoForm>({
     nombre: "",
-    categoria: "",
+    categoriaId: "",
     precio: "",
     stock: "",
     imagen: "",
   });
 
-  useEffect(() => {
-    if (location.state?.producto) {
-      setForm(location.state.producto);
-    }
-  }, [location.state]);
+  const [categorias, setCategorias] = useState<CategoriaProducto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  const handleChange = (field: keyof Producto, value: string) => {
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [producto, categoriasData] = await Promise.all([
+          productoService.getById(id),
+          categoriaProductoService.getAll(),
+        ]);
+
+        setForm({
+          nombre: producto.nombre,
+          categoriaId: producto.categoriaId,
+          precio: String(producto.precio),
+          stock: String(producto.stock),
+          imagen: producto.imagen,
+        });
+
+        setCategorias(categoriasData);
+      } catch (error) {
+        console.error("Error cargando datos de producto", error);
+        alert("No se pudieron cargar los datos del producto");
+      } finally {
+        setLoading(false);
+        setLoadingCategorias(false);
+      }
+    };
+
+    loadData();
+  }, [id]);
+
+  const handleChange = (field: keyof ProductoForm, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Producto actualizado:", form);
-    history.push("/products");
+  const handleSubmit = async () => {
+    const dto: UpdateProductoDto = {
+      nombre: form.nombre,
+      imagen: form.imagen,
+      categoriaId: form.categoriaId,
+      precio: Number(form.precio),
+      stock: Number(form.stock),
+    };
+
+    if (!form.categoriaId) {
+      alert("Selecciona una categoría");
+      return;
+    }
+
+    if (isNaN(dto.precio!) || isNaN(dto.stock!)) {
+      alert("Precio y stock deben ser numéricos");
+      return;
+    }
+
+    try {
+      await productoService.update(id, dto);
+      history.push("/products");
+    } catch (error) {
+      console.error("Error actualizando producto", error);
+      alert("Ocurrió un error actualizando el producto");
+    }
   };
+
+  if (loading) {
+    return (
+      <BaseLayout title="Editar Producto">
+        <p>Cargando datos...</p>
+      </BaseLayout>
+    );
+  }
 
   return (
     <BaseLayout title="Editar Producto">
       <form className="usuario-form" style={{ gap: "40px" }}>
-
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre</label>
@@ -58,12 +127,22 @@ const EditarProducto: React.FC = () => {
         {/* Categoría */}
         <div className="campo">
           <label className="campo-label">Categoría</label>
-          <input
-            className="campo-input"
-            type="text"
-            value={form.categoria}
-            onChange={(e) => handleChange("categoria", e.target.value)}
-          />
+          {loadingCategorias ? (
+            <p>Cargando categorías...</p>
+          ) : (
+            <select
+              className="campo-input"
+              value={form.categoriaId}
+              onChange={(e) => handleChange("categoriaId", e.target.value)}
+            >
+              <option value="">Selecciona una categoría</option>
+              {categorias.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Precio */}
@@ -90,7 +169,7 @@ const EditarProducto: React.FC = () => {
 
         {/* Imagen */}
         <div className="campo">
-          <label className="campo-label">Imagen (URL o ruta)</label>
+          <label className="campo-label">Imagen (URL)</label>
           <input
             className="campo-input"
             type="text"
@@ -102,7 +181,6 @@ const EditarProducto: React.FC = () => {
         <button type="button" className="boton" onClick={handleSubmit}>
           Guardar cambios
         </button>
-
       </form>
     </BaseLayout>
   );

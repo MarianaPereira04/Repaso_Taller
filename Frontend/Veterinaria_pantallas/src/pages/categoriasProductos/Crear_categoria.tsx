@@ -3,34 +3,37 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
-
-interface Categoria {
-  nombre: string;
-  descripcion: string;
-  icono: string;
-}
+import {
+  categoriaProductoService,
+  CreateCategoriaProductoDto,
+} from "../../services/categoriaProductoService";
 
 const Crear_categoria: React.FC = () => {
   const history = useHistory();
-  const [form, setForm] = useState<Categoria>({
+  const [form, setForm] = useState<CreateCategoriaProductoDto>({
     nombre: "",
     descripcion: "",
-    icono: ""
+    icono: "",
   });
 
-  const handleChange = (field: keyof Categoria, value: string) => {
+  const handleChange = (field: keyof CreateCategoriaProductoDto, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Categoría creada:", form);
-    history.push("/categories");
+  const handleSubmit = async () => {
+    try {
+      await categoriaProductoService.create(form);
+      // opcional: alert("Categoría creada correctamente");
+      history.push("/categories");
+    } catch (error) {
+      console.error("Error creando categoría de producto", error);
+      alert("Ocurrió un error creando la categoría");
+    }
   };
 
   return (
     <BaseLayout title="Crear Categoría">
       <form className="usuario-form" style={{ gap: "40px" }}>
-        
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre</label>

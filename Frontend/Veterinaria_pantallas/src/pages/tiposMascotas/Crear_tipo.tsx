@@ -1,37 +1,39 @@
-// src/pages/tiposMascotas/Crear_tipo.tsx
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
-
-interface TipoMascota {
-  nombre: string;
-  descripcion: string;
-  icono: string;
-}
+import {
+  tipoMascotaService,
+  CreateTipoMascotaDto,
+} from "../../services/tipoMascotaService";
 
 const Crear_tipo: React.FC = () => {
   const history = useHistory();
 
-  const [form, setForm] = useState<TipoMascota>({
+  const [form, setForm] = useState<CreateTipoMascotaDto>({
     nombre: "",
     descripcion: "",
     icono: "",
   });
 
-  const handleChange = (field: keyof TipoMascota, value: string) => {
+  const handleChange = (field: keyof CreateTipoMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Tipo registrado:", form);
-    history.push("/types");
+  const handleSubmit = async () => {
+    try {
+      await tipoMascotaService.create(form);
+      // alert("Tipo de mascota creado");
+      history.push("/types");
+    } catch (error) {
+      console.error("Error creando tipo de mascota", error);
+      alert("Ocurrió un error creando el tipo de mascota");
+    }
   };
 
   return (
     <BaseLayout title="Crear Tipo de Mascota">
       <form className="usuario-form" style={{ gap: "40px" }}>
-        
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre del tipo</label>
@@ -68,7 +70,6 @@ const Crear_tipo: React.FC = () => {
         <button type="button" className="boton" onClick={handleSubmit}>
           Crear Tipo
         </button>
-
       </form>
     </BaseLayout>
   );

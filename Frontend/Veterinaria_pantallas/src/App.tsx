@@ -33,30 +33,36 @@ const App: React.FC = () => {
           {/* Usuarios */}
           <Route path="/users" exact component={ListaUsuario} />
           <Route path="/users/create" exact component={CreateUsuario} />
-          <Route path="/users/edit" exact component={EditarUsuario} />
-          <Route path="/users/detail" exact component={DetalleUsuario} />
+          <Route path="/users/:id" exact component={DetalleUsuario} />
+          <Route path="/users/:id/edit" exact component={EditarUsuario} />
+
 
           {/* Mascotas */}
           <Route path="/pets" exact component={ListaMascotas} />
           <Route path="/pets/create" exact component={RegistrarMascota} />
-          <Route path="/pets/edit" exact component={EditarMascota} />
-          <Route path="/pets/detail" exact component={DetalleMascota} />
+          <Route path="/pets/:id" exact component={DetalleMascota} />
+          <Route path="/pets/:id/edit" exact component={EditarMascota} />
+
 
           {/* Productos */}
           <Route path="/products" exact component={ListaProductos} />
           <Route path="/products/create" exact component={CrearProducto} />
-          <Route path="/products/edit" exact component={EditarProducto} />
-          <Route path="/products/detail" exact component={DetalleProducto} />
+          <Route path="/products/:id/edit" exact component={EditarProducto} />
+          <Route path="/products/:id/detail" exact component={DetalleProducto} />
+
+
 
           {/* Tipos mascotas */}
           <Route path="/types" exact component={Listar_tipo} />
           <Route path="/types/create" exact component={Crear_tipo} />
-          <Route path="/types/edit" exact component={Editar_tipo} />
+          <Route path="/types/:id/edit" exact component={Editar_tipo} />
+
 
           {/* Categorias Productos */}
           <Route path="/categories" exact component={Listar_categoria} />
           <Route path="/categories/create" exact component={Crear_categoria} />
-          <Route path="/categories/edit" exact component={Editar_categoria} />
+          <Route path="/categories/:id/edit" exact component={Editar_categoria} />
+
 
 
         </Switch>

@@ -1,37 +1,53 @@
 // src/pages/productos/DetalleProducto.tsx
-import React from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/detalle.css";
+import {
+  productoService,
+  Producto,
+} from "../../services/productoService";
 
-export interface Producto {
-  id?: number;
-  nombre: string;
-  descripcion: string;
-  precio: string;
-  categoria: string;
-  stock: string;
-  imagen: string;
+interface RouteParams {
+  id: string;
 }
 
 const DetalleProducto: React.FC = () => {
   const history = useHistory();
-  const location = useLocation<{ producto: Producto }>();
+  const { id } = useParams<RouteParams>();
 
-  const producto = location.state?.producto || {
-    nombre: "Producto ejemplo",
-    descripcion: "Descripción del producto",
-    categoria: "Alimento",
-    precio: "$$$",
-    stock: "20",
-    imagen: "/assets/producto.png",
-  };
+  const [producto, setProducto] = useState<Producto | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await productoService.getById(id);
+        setProducto(data);
+      } catch (error) {
+        console.error("Error cargando producto", error);
+        alert("No se pudo cargar el producto");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [id]);
+
+  if (loading || !producto) {
+    return (
+      <BaseLayout title="Detalle Producto">
+        <p>Cargando producto...</p>
+      </BaseLayout>
+    );
+  }
 
   return (
     <BaseLayout title="Detalle Producto">
       <div className="usuario-detalle" style={{ gap: "50px" }}>
         <div className="detalle-imagen">
-          <img src={producto.imagen} alt={producto.nombre} />
+          <img src={producto.imagen || "/assets/producto.png"} alt={producto.nombre} />
         </div>
 
         <div className="detalle-info">
@@ -39,14 +55,13 @@ const DetalleProducto: React.FC = () => {
             <strong>Nombre:</strong> <span>{producto.nombre}</span>
           </div>
           <div className="detalle-item">
-            <strong>Descripción:</strong> <span>{producto.descripcion}</span>
+            <strong>Precio:</strong> <span>${producto.precio}</span>
           </div>
-          <div className="detalle-item">
-            <strong>Precio:</strong> <span>{producto.precio}</span>
-          </div>
-          <div className="detalle-item">
-            <strong>Categoría:</strong> <span>{producto.categoria}</span>
-          </div>
+          {producto.categoria && (
+            <div className="detalle-item">
+              <strong>Categoría:</strong> <span>{producto.categoria.nombre}</span>
+            </div>
+          )}
           <div className="detalle-item">
             <strong>Stock:</strong> <span>{producto.stock}</span>
           </div>

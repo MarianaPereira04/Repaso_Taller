@@ -1,46 +1,72 @@
-// src/pages/mascotas/RegistrarMascota.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
-import "../../theme/genericos/create.css"; 
-
-export interface Mascota {
-  id?: number;
-  nombre: string;
-  especie: string;
-  raza: string;
-  edad: string;
-  sexo: string;
-  propietario: string;
-  estado_salud: string;
-}
+import "../../theme/genericos/create.css";
+import {
+  mascotaService,
+  CreateMascotaDto,
+} from "../../services/mascotaService";
+import {
+  tipoMascotaService,
+  TipoMascota,
+} from "../../services/tipoMascotaService";
 
 const RegistrarMascota: React.FC = () => {
   const history = useHistory();
 
-  const [form, setForm] = useState<Mascota>({
+  const [form, setForm] = useState<CreateMascotaDto>({
     nombre: "",
-    especie: "",
     raza: "",
     edad: "",
     sexo: "",
     propietario: "",
-    estado_salud: "",
+    estadoSalud: "",
+    tipoMascotaId: "",
   });
 
-  const handleChange = (field: keyof Mascota, value: string) => {
+  const [tipos, setTipos] = useState<TipoMascota[]>([]);
+  const [loadingTipos, setLoadingTipos] = useState(true);
+
+  // 🔹 Traer los tipos de mascota del backend cuando se monta la pantalla
+  useEffect(() => {
+    const loadTipos = async () => {
+      try {
+        const data = await tipoMascotaService.getAll();
+        setTipos(data);
+      } catch (error) {
+        console.error("Error cargando tipos de mascota", error);
+        alert("No se pudieron cargar los tipos de mascota");
+      } finally {
+        setLoadingTipos(false);
+      }
+    };
+
+    loadTipos();
+  }, []);
+
+  const handleChange = (field: keyof CreateMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Mascota registrada:", form);
-    history.push("/pets");
+  const handleSubmit = async () => {
+    if (!form.tipoMascotaId) {
+      alert("Selecciona un tipo de mascota");
+      return;
+    }
+
+    try {
+      await mascotaService.create(form);
+      // opcional: alert("Mascota registrada correctamente");
+      history.push("/pets");
+    } catch (error) {
+      console.error("Error registrando mascota:", error);
+      alert("Ocurrió un error registrando la mascota");
+    }
   };
 
   return (
     <BaseLayout title="Registrar Mascota">
       <form className="usuario-form" style={{ gap: "30px" }}>
-        
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre</label>
@@ -52,15 +78,25 @@ const RegistrarMascota: React.FC = () => {
           />
         </div>
 
-        {/* Especie */}
+        {/* Tipo de mascota (desplegable) */}
         <div className="campo">
-          <label className="campo-label">Especie</label>
-          <input
-            className="campo-input"
-            type="text"
-            value={form.especie}
-            onChange={(e) => handleChange("especie", e.target.value)}
-          />
+          <label className="campo-label">Tipo de mascota</label>
+          {loadingTipos ? (
+            <p>Cargando tipos...</p>
+          ) : (
+            <select
+              className="campo-input"
+              value={form.tipoMascotaId}
+              onChange={(e) => handleChange("tipoMascotaId", e.target.value)}
+            >
+              <option value="">Selecciona un tipo</option>
+              {tipos.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Raza */}
@@ -79,7 +115,7 @@ const RegistrarMascota: React.FC = () => {
           <label className="campo-label">Edad</label>
           <input
             className="campo-input"
-            type="text"
+            type="number"
             value={form.edad}
             onChange={(e) => handleChange("edad", e.target.value)}
           />
@@ -113,8 +149,8 @@ const RegistrarMascota: React.FC = () => {
           <input
             className="campo-input"
             type="text"
-            value={form.estado_salud}
-            onChange={(e) => handleChange("estado_salud", e.target.value)}
+            value={form.estadoSalud}
+            onChange={(e) => handleChange("estadoSalud", e.target.value)}
           />
         </div>
 

@@ -1,35 +1,71 @@
-// src/pages/tiposMascotas/Editar_tipo.tsx
-import React, { useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
-
-interface TipoMascota {
-  nombre: string;
-  descripcion: string;
-  icono: string;
-}
+import {
+  tipoMascotaService,
+  TipoMascota,
+  UpdateTipoMascotaDto,
+} from "../../services/tipoMascotaService";
 
 const Editar_tipo: React.FC = () => {
   const history = useHistory();
-  const location = useLocation<{ tipo: TipoMascota }>();
-  const tipo = location.state?.tipo || { nombre: "", descripcion: "", icono: "" };
+  const { id } = useParams<{ id: string }>(); // 👈 recibir ID desde la URL
 
-  const [form, setForm] = useState<TipoMascota>(tipo);
+  const [form, setForm] = useState<UpdateTipoMascotaDto>({
+    nombre: "",
+    descripcion: "",
+    icono: "",
+  });
 
-  const handleChange = (field: keyof TipoMascota, value: string) => {
+  const [loading, setLoading] = useState(true);
+
+  // 🔹 Cargar datos originales del tipo
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await tipoMascotaService.getById(id);
+        setForm({
+          nombre: data.nombre,
+          descripcion: data.descripcion,
+          icono: data.icono,
+        });
+      } catch (error) {
+        console.error("Error cargando tipo", error);
+        alert("No se pudo cargar el tipo de mascota");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [id]);
+
+  const handleChange = (field: keyof UpdateTipoMascotaDto, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Tipo editado:", form);
-    history.push("/types");
+  const handleSubmit = async () => {
+    try {
+      await tipoMascotaService.update(id, form);
+      history.push("/types");
+    } catch (error) {
+      console.error("Error actualizando tipo", error);
+      alert("No se pudo actualizar el tipo");
+    }
   };
+
+  if (loading) {
+    return (
+      <BaseLayout title="Editar Tipo de Mascota">
+        <p>Cargando datos...</p>
+      </BaseLayout>
+    );
+  }
 
   return (
     <BaseLayout title="Editar Tipo de Mascota">
       <form className="usuario-form" style={{ gap: "40px" }}>
-
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre del tipo</label>
@@ -66,7 +102,6 @@ const Editar_tipo: React.FC = () => {
         <button type="button" className="boton" onClick={handleSubmit}>
           Guardar cambios
         </button>
-
       </form>
     </BaseLayout>
   );

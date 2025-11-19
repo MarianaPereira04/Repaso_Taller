@@ -1,13 +1,20 @@
 // src/pages/productos/CrearProducto.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import BaseLayout from "../../layout/BaseLayout";
 import "../../theme/genericos/create.css";
+import {
+  productoService,
+  CreateProductoDto,
+} from "../../services/productoService";
+import {
+  categoriaProductoService,
+  CategoriaProducto,
+} from "../../services/categoriaProductoService";
 
-export interface Producto {
-  id?: number;
+interface ProductoForm {
   nombre: string;
-  categoria: string;
+  categoriaId: string;
   precio: string;
   stock: string;
   imagen: string;
@@ -16,27 +23,68 @@ export interface Producto {
 const CrearProducto: React.FC = () => {
   const history = useHistory();
 
-  const [form, setForm] = useState<Producto>({
+  const [form, setForm] = useState<ProductoForm>({
     nombre: "",
-    categoria: "",
+    categoriaId: "",
     precio: "",
     stock: "",
     imagen: "",
   });
 
-  const handleChange = (field: keyof Producto, value: string) => {
+  const [categorias, setCategorias] = useState<CategoriaProducto[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      try {
+        const data = await categoriaProductoService.getAll();
+        setCategorias(data);
+      } catch (error) {
+        console.error("Error cargando categorías", error);
+        alert("No se pudieron cargar las categorías");
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+
+    loadCategorias();
+  }, []);
+
+  const handleChange = (field: keyof ProductoForm, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Producto creado:", form);
-    history.push("/products");
+  const handleSubmit = async () => {
+    if (!form.categoriaId) {
+      alert("Selecciona una categoría");
+      return;
+    }
+
+    const dto: CreateProductoDto = {
+      nombre: form.nombre,
+      imagen: form.imagen,
+      categoriaId: form.categoriaId,
+      precio: Number(form.precio),
+      stock: Number(form.stock),
+    };
+
+    if (isNaN(dto.precio) || isNaN(dto.stock)) {
+      alert("Precio y stock deben ser numéricos");
+      return;
+    }
+
+    try {
+      await productoService.create(dto);
+      history.push("/products");
+    } catch (error) {
+      console.error("Error creando producto", error);
+      alert("Ocurrió un error creando el producto");
+    }
   };
 
   return (
     <BaseLayout title="Crear Producto">
       <form className="usuario-form" style={{ gap: "40px" }}>
-
         {/* Nombre */}
         <div className="campo">
           <label className="campo-label">Nombre</label>
@@ -48,15 +96,25 @@ const CrearProducto: React.FC = () => {
           />
         </div>
 
-        {/* Categoría */}
+        {/* Categoría (select) */}
         <div className="campo">
           <label className="campo-label">Categoría</label>
-          <input
-            className="campo-input"
-            type="text"
-            value={form.categoria}
-            onChange={(e) => handleChange("categoria", e.target.value)}
-          />
+          {loadingCategorias ? (
+            <p>Cargando categorías...</p>
+          ) : (
+            <select
+              className="campo-input"
+              value={form.categoriaId}
+              onChange={(e) => handleChange("categoriaId", e.target.value)}
+            >
+              <option value="">Selecciona una categoría</option>
+              {categorias.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {/* Precio */}
@@ -83,7 +141,7 @@ const CrearProducto: React.FC = () => {
 
         {/* Imagen */}
         <div className="campo">
-          <label className="campo-label">Imagen (URL o ruta)</label>
+          <label className="campo-label">Imagen (URL)</label>
           <input
             className="campo-input"
             type="text"

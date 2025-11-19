@@ -2,20 +2,15 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "../../theme/genericos/create.css";
 import BaseLayout from "../../layout/BaseLayout";
-
-export interface Usuario {
-  id?: number;
-  nombre: string;
-  correo: string;
-  telefono: string;
-  rol: string;
-  estado: string;
-}
+import {
+  usuarioService,
+  CreateUsuarioDto,
+} from "../../services/usuarioService";
 
 const CreateUsuario: React.FC = () => {
   const history = useHistory();
 
-  const [form, setForm] = useState<Usuario>({
+  const [form, setForm] = useState<CreateUsuarioDto>({
     nombre: "",
     correo: "",
     telefono: "",
@@ -23,13 +18,19 @@ const CreateUsuario: React.FC = () => {
     estado: "",
   });
 
-  const handleChange = (field: keyof Usuario, value: string) => {
+  const handleChange = (field: keyof CreateUsuarioDto, value: string) => {
     setForm({ ...form, [field]: value });
   };
 
-  const handleSubmit = () => {
-    console.log("Usuario creado:", form);
-    history.push("/users");
+  const handleSubmit = async () => {
+    try {
+      await usuarioService.create(form);
+      // opcional: alert("Usuario creado correctamente");
+      history.push("/users");
+    } catch (error) {
+      console.error("Error creando usuario", error);
+      alert("Ocurrió un error creando el usuario");
+    }
   };
 
   return (
